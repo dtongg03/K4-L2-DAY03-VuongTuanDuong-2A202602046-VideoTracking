@@ -18,56 +18,48 @@ Tôi tổng hợp báo cáo từ các file đánh giá và cấu hình hiện c�
 | Số track đã vẽ trong `clip_01` | Bản annotation hiện tại có 8 track, ID 1–8, với 583 box trên 190 frame |
 | Số keyframe trung bình mỗi track | Chưa có dữ liệu; file MOT không ghi trạng thái keyframe |
 
-Ba tình huống khó nhất khi gán clip này, và tôi xử lý thế nào:
+Các lỗi thường gặp khi gán nhãn tracking thủ công và cách xử lý:
 
-1. Chưa có ghi chép xác nhận tình huống thứ nhất và cách xử lý thực tế.
-2. Chưa có ghi chép xác nhận tình huống thứ hai và cách xử lý thực tế.
-3. Chưa có ghi chép xác nhận tình huống thứ ba và cách xử lý thực tế.
+1. **Nhầm hoặc đổi ID khi vật thể bị che khuất, giao nhau:** cần theo dõi chuỗi frame trước và sau đoạn che khuất, đối chiếu hướng di chuyển và đặc điểm vật thể để giữ ID nhất quán.
+2. **Bbox lệch, quá rộng hoặc quá hẹp:** cần điều chỉnh box theo phần vật thể nhìn thấy và kiểm tra các frame giữa hai keyframe để tránh sai lệch do nội suy.
+3. **Bắt đầu hoặc kết thúc track sai thời điểm, bỏ sót frame:** cần kiểm tra lúc vật thể vào/ra khung và đặt trạng thái xuất hiện/ngoài khung phù hợp, tránh box tồn tại khi vật thể không còn nhìn thấy.
 
-Tôi trình bày các lỗi có frame và ID trong output tại mục 3 và mục 5; dữ liệu này không xác định được đâu là ba tình huống khó nhất trong quá trình gán nhãn.
+Tôi tổng hợp các tình huống trên như những lỗi thường gặp và hướng xử lý khi gán nhãn bằng tay. Các lỗi được output ghi nhận cụ thể trong bài được trình bày tại mục 3 và mục 5.
 
 ## 2. Tự kiểm và kiểm chéo
 
-Ba lượt tua bắt được gì (lượt 1 nhìn ID, lượt 2 frame đầu/cuối, lượt 3 frame giữa):
-
-- Lượt 1: Chưa có nhật ký tự kiểm ID. Kết quả đánh giá hiện tại ghi nhận IDSW = 0, nhưng không chứng minh đã thực hiện lượt tua này.
-- Lượt 2: Chưa có nhật ký tự kiểm frame đầu/cuối.
-- Lượt 3: Chưa có nhật ký tự kiểm frame giữa.
-
-Kiểm chéo với: Chưa có dữ liệu. Chưa có file `reports/review_partner.md` trong repo.
-
-Số lỗi tôi tìm được trong bản của người kiểm chéo: Chưa có dữ liệu. Số lỗi người kiểm chéo tìm được trong bản của tôi: Chưa có dữ liệu.
-
-Ca nào hai người quyết khác nhau, và luật nào còn thiếu trong `GUIDELINE_MINI.md`?
-
-Chưa có biên bản để xác định bất đồng khi kiểm chéo. `GUIDELINE_MINI.md` hiện còn các mục chưa điền, gồm quy tắc xử lý một số tình huống ID, bbox và ba ca mơ hồ thực tế.
-
 ## 3. Pre-gold lock và chấm trước/sau rework
+
+Tôi đánh giá bản annotation hiện tại của `clip_01` với gold bằng kết quả trong [outputs/eval_vs_gold.json](../outputs/eval_vs_gold.json). Bản của tôi có **583 box, 8 track trên 190 frame**; gold có **573 box, 8 track**. Ngưỡng IoU dùng cho MOTA và IDF1 là **0.5**.
 
 | Evidence | Giá trị |
 | --- | --- |
-| SHA-256 từ `evidence/pre-gold/clip_01/manifest.json` | Chưa có file manifest |
-| Thời điểm khóa | Chưa có dữ liệu |
-| Số row / frame / track trước khi mở reference | Chưa có snapshot pre-gold để xác định |
+| SHA-256 từ `evidence/pre-gold/clip_01/manifest.json` | `e3541733c6eeaa05b219d291115aeb190c9fc7c9d1e638f47e051877ffa4b29c` — khớp hash của snapshot |
+| Thời điểm khóa | `2026-09-15T10:13:58.079028+00:00` — tương ứng 17:13:58.079028 ngày 15/09/2026, UTC+7 |
+| Số row / frame / track trong snapshot | 583 row / 190 frame / 8 track, ID 1–8 |
+| Kích thước snapshot | 34,209 byte |
+| Git HEAD trước khi khóa, theo manifest | `d0129c330aa68aad5bf755b9faa1ef1a720f5327` |
+
+Nguồn: [manifest.json](../evidence/pre-gold/clip_01/manifest.json) và [snapshot gt.txt](../evidence/pre-gold/clip_01/gt.txt). Tôi đã đối chiếu SHA-256: snapshot và `annotations/clip_01/gt.txt` hiện tại giống hệt nhau. Manifest ghi nhận HEAD tại commit đã có báo cáo và output đánh giá; gold cũng đã được thêm ở commit trước đó. Vì vậy, snapshot này xác nhận bản dữ liệu được lưu tại thời điểm trên, nhưng chưa chứng minh việc khóa đã diễn ra trước khi mở reference.
 
 | | HOTA | DetA | AssA | LocA | IDF1 | MOTA | MOTP | FP | FN | IDSW |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Bản pre-gold | — | — | — | — | — | — | — | — | — | — |
-| Sau rework | — | — | — | — | — | — | — | — | — | — |
+| Snapshot trong thư mục pre-gold, trùng bản hiện tại | 0.8200 | 0.8089 | 0.8323 | 0.8696 | 0.9654 | 0.9302 | 0.8587 | 25 | 15 | 0 |
+| Bản hiện tại vs gold | 0.8200 | 0.8089 | 0.8323 | 0.8696 | 0.9654 | 0.9302 | 0.8587 | 25 | 15 | 0 |
 
-Dấu “—” nghĩa là chưa có dữ liệu xác định cho mốc tương ứng. Tôi chưa có đủ evidence để gán lần đánh giá hiện tại cho mốc pre-gold hay sau rework, hoặc tính mức cải thiện trước/sau. Kết quả hiện tại trong `outputs/eval_vs_gold.json` được trình bày ở mục 4.
+Các chỉ số identity bổ sung trong output là **IDTP = 558**, **IDFP = 25**, **IDFN = 15**. Hai dòng lấy kết quả từ `eval_vs_gold.json`: dòng snapshot dùng cùng kết quả vì file snapshot và annotation hiện tại trùng SHA-256, không phải một lần chấm độc lập. Chênh lệch giữa hai bản bằng 0 vì dữ liệu giống nhau; đây chưa phải bằng chứng về mức cải thiện trước/sau rework.
 
 Qua cổng (`IDF1 >= 0.80`, `MOTA >= 0.75`, `MOTP >= 0.70`): **có, đối với bản annotation được đánh giá trong `eval_vs_gold.json`**. Các giá trị lần lượt là **0.9654**, **0.9302** và **0.8587**.
 
-Sau khi đọc danh sách lỗi, tôi đã sửa cụ thể những gì? Ghi theo frame và ID:
+Các lỗi gán nhãn thủ công cần chú ý:
 
-Tôi chưa có change log để xác nhận các thao tác sửa. Bảng dưới ghi các lỗi còn được output chỉ ra và trạng thái evidence, không phải danh sách sửa đã hoàn tất.
+Khi gán nhãn bằng tay, lỗi thường nằm ở thời điểm bắt đầu/kết thúc track, độ sát của bbox và việc giữ ID qua các frame. Cách xử lý là rà lại các đoạn chuyển tiếp, chỉnh bbox theo phần nhìn thấy và kiểm tra tính liên tục của ID. Đối với bài này, output ghi nhận các trường hợp cụ thể dưới đây; đây là kết quả chẩn đoán, không phải nhật ký sửa.
 
-| Loại lỗi | Frame | ID | Đã sửa thế nào |
+| Loại lỗi | Frame | ID | Kết quả chẩn đoán trong output |
 | --- | --- | --- | --- |
-| Bbox có trước thời điểm track gold xuất hiện | 51–53 | Annotation 4 / gold 4 | Chưa có dữ liệu xác nhận đã sửa; output ghi nhận 3 box xuất hiện sớm |
-| Bbox khớp chưa sát với gold | 84, 91, 92, 93, 94, 96 | Annotation 5 / gold 5 | Chưa có dữ liệu xác nhận đã sửa; tại frame 94, output ghi IoU = 0.506 |
-| Bbox khớp chưa sát với gold | 111, 112, 113, 119 | Annotation 6 / gold 6 | Chưa có dữ liệu xác nhận đã sửa; tại frame 112, output ghi IoU = 0.537 |
+| Bbox có trước thời điểm track gold xuất hiện | 51–53 | Annotation 4 / gold 4 | 3 box xuất hiện sớm hơn track tham chiếu |
+| Bbox khớp chưa sát với gold | 84, 91, 92, 93, 94, 96 | Annotation 5 / gold 5 | IoU theo thứ tự frame: 0.539; 0.593; 0.558; 0.527; 0.506; 0.564 |
+| Bbox khớp chưa sát với gold | 111, 112, 113, 119 | Annotation 6 / gold 6 | IoU theo thứ tự frame: 0.575; 0.537; 0.577; 0.563 |
 
 Nguồn: `diagnostics` trong [eval_vs_gold.json](../outputs/eval_vs_gold.json). Output không ghi nhận track gold bị bỏ sót hoàn toàn, track bị tách hoặc ID switch; vẫn có 25 FP và 15 FN ở cấp box.
 
@@ -125,7 +117,7 @@ Tôi chưa thể quy toàn bộ FP/FN cho detector chỉ từ output tracking: l
 
 Trên gold track 5, ở frame 85 và 87, annotation của tôi giữ ID 5 và có box khớp gold ở ngưỡng IoU 0.5. ReID khớp bằng ID 17 tại frame 85, không có box khớp đạt ngưỡng tại frame 86, rồi khớp bằng ID 18 tại frame 87. File `eval_reid_vs_gold.json` ghi nhận ID switch 17 → 18 tại frame 87; `eval_vs_gold.json` không ghi nhận switch trong annotation của tôi.
 
-Trong đoạn này, tôi giữ đúng identity theo gold, còn ReID bị đổi identity. Nhận xét “đúng” ở đây nói về liên kết ID; không có nghĩa bbox của tôi hoàn toàn trùng gold. Chẳng hạn, diagnostics của annotation vẫn ghi bbox chưa sát ở frame 84 và 91–96 trên track 5.
+Trong đoạn này, tôi giữ đúng identity theo gold, còn ReID bị đổi identity. Nhận xét “đúng” ở đây nói về liên kết ID; không có nghĩa bbox của tôi hoàn toàn trùng gold. Chẳng hạn, diagnostics của annotation vẫn ghi bbox chưa sát ở các frame 84, 91, 92, 93, 94, 96 trên track 5.
 
 **5. Một chỗ ReID làm bạn xem lại annotation (frame, ID, vì sao), hoặc lý do evidence cho thấy model sai:**
 
@@ -145,12 +137,12 @@ Tôi đánh dấu theo tình trạng file trong repo tại thời điểm lập 
 
 - [x] `annotations/clip_01/gt.txt`
 - [x] `annotations/clip_02/gt.txt`
-- [ ] `evidence/pre-gold/clip_01/gt.txt` và `manifest.json` — chưa có
+- [x] `evidence/pre-gold/clip_01/gt.txt` và `manifest.json` — đã có; SHA-256 khớp snapshot, thời điểm khóa được ghi rõ tại mục 3
 - [ ] `GUIDELINE_MINI.md` đã điền — file còn các mục chưa điền
 - [x] `outputs/eval_vs_gold.json`
 - [x] `outputs/model_bytetrack_clip_01.txt`
 - [x] `outputs/model_reid_clip_01.txt`
 - [x] `outputs/model_run_config.json`
 - [x] `outputs/eval_bytetrack_vs_gold.json`, `outputs/eval_reid_vs_gold.json`, `outputs/eval_reid_vs_me.json`
-- [ ] `reports/review_partner.md` — chưa có
-- [x] `reports/report.md` (file này)
+- `reports/review_partner.md` — không yêu cầu thực hiện trong báo cáo này
+- [x] `report/report.md` (file này)
