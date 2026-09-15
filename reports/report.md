@@ -145,4 +145,4 @@ Tôi đánh dấu theo tình trạng file trong repo tại thời điểm lập 
 - [x] `outputs/model_run_config.json`
 - [x] `outputs/eval_bytetrack_vs_gold.json`, `outputs/eval_reid_vs_gold.json`, `outputs/eval_reid_vs_me.json`
 - `reports/review_partner.md` — không yêu cầu thực hiện trong báo cáo này
-- [x] `report/report.md` (file này)
+- [x] `reports/report.md` (file này)
