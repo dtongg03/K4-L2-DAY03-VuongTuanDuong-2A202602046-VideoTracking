@@ -4,6 +4,8 @@ Họ tên / nhóm: Vương Tuấn Dương — MSSV: 2A202602046
 
 Ngày: 15/09/2026 (ngày lập báo cáo)
 
+Hỗ trợ biên soạn: Codex (OpenAI) hỗ trợ tổng hợp output, diễn đạt báo cáo và hoàn thiện guideline trong phiên làm việc này.
+
 Tôi tổng hợp báo cáo từ các file đánh giá và cấu hình hiện có trong `outputs/`. Các chỉ số được giữ nguyên theo JSON, trình bày đến bốn chữ số thập phân. Những mục không có nhật ký hoặc evidence được ghi là chưa có dữ liệu; các phát hiện từ output không được coi là thao tác sửa đã thực hiện.
 
 ---
