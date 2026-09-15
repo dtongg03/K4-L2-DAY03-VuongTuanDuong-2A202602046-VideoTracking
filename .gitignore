@@ -17,6 +17,9 @@ outputs/tmp_*.txt
 *.pt
 *.zip
 
+# Annotations clip_02 images kept local only (removed from repo).
+annotations/clip_02/img1/
+
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
