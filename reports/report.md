@@ -14,9 +14,9 @@ Tôi tổng hợp báo cáo từ các file đánh giá và cấu hình hiện c�
 
 | Mục | Giá trị |
 | --- | --- |
-| Công cụ | Chưa có dữ liệu xác nhận công cụ thực tế đã sử dụng |
-| Thời gian gán `clip_02` (warm-up) | Chưa có dữ liệu |
-| Thời gian gán `clip_01` | Chưa có dữ liệu |
+| Công cụ | CVAT |
+| Thời gian gán `clip_02` (warm-up) | 30' |
+| Thời gian gán `clip_01` | 60' |
 | Số track đã vẽ trong `clip_01` | Bản annotation hiện tại có 8 track, ID 1–8, với 583 box trên 190 frame |
 | Số keyframe trung bình mỗi track | Chưa có dữ liệu; file MOT không ghi trạng thái keyframe |
 
