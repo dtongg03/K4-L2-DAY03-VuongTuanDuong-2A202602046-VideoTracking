@@ -7,50 +7,47 @@
   "pred_label": "yolo26n.pt + BoT-SORT + ReID treatment",
   "gt_label": "nhãn của bạn",
   "metrics": {
-    "HOTA": 0.7026,
-    "DetA": 0.597,
+    "HOTA": 0.7644,
+    "DetA": 0.7071,
     "AssA": 0.8301,
     "LocA": 0.8711,
-    "IDF1": 0.8241,
+    "IDF1": 0.9091,
     "IDTP": 555,
     "IDFP": 83,
-    "IDFN": 154,
-    "MOTA": 0.67,
+    "IDFN": 28,
+    "MOTA": 0.8148,
     "MOTP": 0.8532,
     "IDSW": 3,
     "FP": 80,
-    "FN": 151,
-    "GT_boxes": 709,
+    "FN": 25,
+    "GT_boxes": 583,
     "PRED_boxes": 638
   },
   "gate": {
     "checks": {
       "IDF1": {
-        "value": 0.8240534521158129,
+        "value": 0.9090909090909091,
         "required": 0.8,
         "passed": true
       },
       "MOTA": {
-        "value": 0.6699576868829338,
+        "value": 0.8147512864493996,
         "required": 0.75,
-        "passed": false
+        "passed": true
       },
       "MOTP": {
-        "value": 0.8532149606296485,
+        "value": 0.8532332855295209,
         "required": 0.7,
         "passed": true
       }
     },
-    "passed": false
+    "passed": true
   },
   "diagnostics": {
-    "missed_gt_tracks": [
-      4,
-      5
-    ],
+    "missed_gt_tracks": [],
     "fragmented_gt_tracks": [
       {
-        "gt_track": 8,
+        "gt_track": 6,
         "pred_tracks": [
           31,
           24,
@@ -64,7 +61,7 @@
         "gt_length": 55
       },
       {
-        "gt_track": 7,
+        "gt_track": 5,
         "pred_tracks": [
           18,
           17
@@ -76,7 +73,7 @@
         "gt_length": 59
       },
       {
-        "gt_track": 9,
+        "gt_track": 7,
         "pred_tracks": [
           29,
           39
@@ -130,19 +127,19 @@
     "id_switches": [
       {
         "frame": 87,
-        "gt_track": 7,
+        "gt_track": 5,
         "from_track": 17,
         "to_track": 18
       },
       {
         "frame": 107,
-        "gt_track": 8,
+        "gt_track": 6,
         "from_track": 24,
         "to_track": 28
       },
       {
         "frame": 110,
-        "gt_track": 8,
+        "gt_track": 6,
         "from_track": 28,
         "to_track": 31
       }
@@ -168,30 +165,30 @@
       },
       {
         "frame": 89,
-        "gt_track": 7,
+        "gt_track": 5,
         "pred_track": 18,
         "iou": 0.55
       },
       {
         "frame": 94,
-        "gt_track": 7,
+        "gt_track": 5,
         "pred_track": 18,
         "iou": 0.572
       },
       {
         "frame": 108,
-        "gt_track": 9,
+        "gt_track": 7,
         "pred_track": 29,
         "iou": 0.59
       },
       {
         "frame": 118,
-        "gt_track": 8,
+        "gt_track": 6,
         "pred_track": 31,
         "iou": 0.592
       }
     ],
-    "n_gt_tracks": 10,
+    "n_gt_tracks": 8,
     "n_pred_tracks": 16
   }
 }
