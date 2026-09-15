@@ -138,7 +138,7 @@ Tôi đánh dấu theo tình trạng file trong repo tại thời điểm lập 
 - [x] `annotations/clip_01/gt.txt`
 - [x] `annotations/clip_02/gt.txt`
 - [x] `evidence/pre-gold/clip_01/gt.txt` và `manifest.json` — đã có; SHA-256 khớp snapshot, thời điểm khóa được ghi rõ tại mục 3
-- [ ] `GUIDELINE_MINI.md` đã điền — file còn các mục chưa điền
+- [x] `GUIDELINE_MINI.md` đã điền — quy tắc gán nhãn và ba ca rà soát dựa trên output
 - [x] `outputs/eval_vs_gold.json`
 - [x] `outputs/model_bytetrack_clip_01.txt`
 - [x] `outputs/model_reid_clip_01.txt`

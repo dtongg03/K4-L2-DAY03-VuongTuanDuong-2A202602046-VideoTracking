@@ -1,74 +1,85 @@
 # Mini annotation guideline — Ngày 3 (tracking)
 
-> Điền file này **trong lúc gán nhãn**, không phải sau khi xong. Mỗi lần bạn dừng
-> lại nghĩ "cái này tính sao nhỉ?" thì đó là một dòng phải ghi vào đây.
->
-> Đây là tài liệu mà người gán nhãn tiếp theo sẽ đọc để làm giống bạn. Nếu hai
-> người trong nhóm gán khác nhau, gần như luôn là vì file này chưa nói rõ — chứ
-> không phải vì ai kém.
+Nhóm / tên: Vương Tuấn Dương — MSSV: 2A202602046
 
-Nhóm / tên: `...`
 Clip: `clip_01`, `clip_02`
+
+Tôi hoàn thiện hướng dẫn này dựa trên `GUIDE.md`, `CVAT_TASK_SPEC.md` và kết quả đánh giá hiện có. Các quy tắc dưới đây hướng dẫn gán nhãn thủ công; ba ca ở mục 4 được tổng hợp từ output, không phải nhật ký thao tác hay xác nhận đã sửa annotation.
 
 ---
 
 ## 1. Phạm vi: gán cái gì, không gán cái gì
 
-Một lớp duy nhất: **`vehicle`** — xe bốn bánh (xe con, van, xe buýt, xe tải).
+Một lớp duy nhất: **`vehicle`** — xe bốn bánh.
 
 | Gán | Không gán |
 | --- | --- |
-| xe con, SUV, taxi, xe bán tải | người đi bộ |
-| van, minivan | xe đạp |
-| xe buýt, minibus | **xe máy / mô tô** |
-| xe tải, xe đầu kéo | xe trong ảnh quảng cáo, trong gương, dưới bóng nước |
+| Xe con, SUV, taxi, xe bán tải | Người đi bộ |
+| Van, minivan | Xe đạp |
+| Xe buýt, minibus | Xe máy / mô tô |
+| Xe tải, xe đầu kéo | Xe trong ảnh quảng cáo, trong gương, dưới bóng nước |
 
-Bổ sung của nhóm (nếu có): `...`
+Tôi áp dụng phạm vi của bài, không thêm lớp nhãn. Xe đứng yên vẫn thuộc phạm vi nếu xác định được là xe bốn bánh. Khi vật thể nhỏ hoặc mờ đến mức chưa xác định được loại, cần xem các frame lân cận trước khi quyết định.
 
 ## 2. Luật ID — phần quan trọng nhất
 
-| Tình huống | Luật của nhóm | Vì sao |
+| Tình huống | Quy tắc áp dụng | Vì sao |
 | --- | --- | --- |
-| Xe bị che một phần rồi hiện lại | giữ nguyên ID nếu bị che **dưới ... frame** (mặc định của lab: 25 frame = 2 giây @ 12.5 fps) | `...` |
-| Xe bị che lâu hơn ngưỡng trên | `...` | `...` |
-| Xe rời khung hình rồi quay lại | mặc định: **track mới** | `...` |
-| Hai xe cắt nhau / chồng lên nhau | `...` | `...` |
+| Xe bị che một phần | Giữ cùng ID, bbox ôm phần nhìn thấy; bật Occluded khi phù hợp | Che khuất không làm thay đổi identity của vật thể |
+| Xe bị che hoàn toàn rồi hiện lại dưới 25 frame | Giữ ID cũ khi xác định được cùng xe; dùng Outside trong đoạn hoàn toàn vắng mặt | Áp dụng ngưỡng dưới 2 giây của lab tại 12.5 fps; không vẽ box vô hình |
+| Xe bị che từ 25 frame trở lên | Hướng dẫn này lấy 25 frame làm ranh giới: tạo track mới khi hiện lại | Làm rõ trường hợp đúng ngưỡng, tránh nối track qua khoảng mất quan sát dài |
+| Xe rời khung hình rồi quay lại | Kết thúc track cũ và tạo track mới | Theo quy tắc mặc định của lab, ra khỏi khung là kết thúc track |
+| Hai xe cắt nhau / chồng lên nhau | Theo dõi từng xe qua các frame trước và sau giao nhau; không đổi ID theo vị trí trái/phải | Tránh hoán đổi ID khi vị trí tương đối của hai xe thay đổi |
+
+Không gộp hai xe vào cùng ID. Không tạo ID mới chỉ vì thay đổi kích thước, hướng di chuyển hoặc bị che một phần. Nếu cần sửa ID, sửa trong công cụ gán nhãn rồi export lại; không đổi ID trực tiếp trong file MOT.
 
 ## 3. Luật bbox
 
-| Tình huống | Luật của nhóm |
+| Tình huống | Quy tắc áp dụng |
 | --- | --- |
-| Xe bị cắt bởi rìa ảnh | bbox chạm đúng rìa, không đoán phần ngoài ảnh |
-| Xe bị xe khác che một phần | bbox ôm phần **nhìn thấy được** |
-| Xe vừa xuất hiện, còn rất nhỏ / rất mờ | bắt đầu track từ frame đầu tiên xác định được là xe bốn bánh; ngưỡng nhóm chọn: `...` |
-| Xe đang đỗ, không di chuyển | `...` |
-| Keyframe đặt dày ở đâu | `...` |
+| Xe bị cắt bởi rìa ảnh | Bbox chạm đúng rìa ảnh, không đoán phần ngoài khung |
+| Xe bị xe khác che một phần | Bbox ôm phần nhìn thấy được, không bao cả phần bị che |
+| Xe vừa xuất hiện, còn rất nhỏ / rất mờ | Bắt đầu ở frame đầu xác định được đó là xe bốn bánh. Dùng tiêu chí nhận diện loại vật thể, không tự đặt ngưỡng pixel khi bài không quy định |
+| Xe đang đỗ, không di chuyển | Vẫn gán nhãn và giữ ID khi xe còn hiện diện; kiểm tra bbox nếu mức che khuất thay đổi |
+| Xe hoàn toàn không còn nhìn thấy | Đặt Outside tại frame đầu vắng mặt, tránh để nội suy kéo dài box |
+| Keyframe đặt dày ở đâu | Quanh lúc vào/ra khung, bắt đầu/kết thúc che khuất, giao nhau hoặc thay đổi nhanh về vị trí/kích thước; kiểm tra các frame nội suy giữa hai keyframe |
 
-## 4. Ít nhất ba ca mơ hồ đã gặp thật
+Dùng Rectangle **Track**, không dùng các Shape rời cho cùng một xe. Các lỗi thủ công thường gặp là box lệch, quá rộng/hẹp, bỏ sót frame và kết thúc track muộn. Cách xử lý là xem từng frame quanh đoạn chuyển tiếp, chỉnh theo phần nhìn thấy và kiểm tra lại đoạn nội suy.
 
-Ghi **frame cụ thể** và **ID cụ thể**, không ghi chung chung.
+Frame trong phần evidence dưới đây là **MOT, bắt đầu từ 1**. Nếu CVAT hiển thị frame đầu là 0 thì đối chiếu đúng độ lệch khi tìm frame; không sửa chỉ số frame bằng tay sau export.
 
-### Ca 1
-- Clip / frame / ID: `...`
-- Tình huống: `...`
-- Quyết định: `...`
-- Lý do: `...`
+## 4. Ba ca cần rà soát từ kết quả đánh giá
 
-### Ca 2
-- Clip / frame / ID: `...`
-- Tình huống: `...`
-- Quyết định: `...`
-- Lý do: `...`
+Nguồn: `diagnostics` trong [outputs/eval_vs_gold.json](outputs/eval_vs_gold.json). Các ca này ghi nhận sai khác với gold; nguyên nhân hình ảnh và thao tác sửa cần được xác định bằng frame gốc.
 
-### Ca 3
-- Clip / frame / ID: `...`
-- Tình huống: `...`
-- Quyết định: `...`
-- Lý do: `...`
+### Ca 1 — Bắt đầu track sớm
+
+- Clip / frame / ID: `clip_01`, frame **51–53**, annotation ID **4**, gold ID **4**.
+- Tình huống: Output ghi nhận 3 bbox của annotation có trước khi track tham chiếu xuất hiện.
+- Hướng xử lý: Rà lại frame bắt đầu; chỉ bắt đầu track khi xác định được xe bốn bánh theo hình ảnh. Kiểm tra Outside và nội suy quanh thời điểm xuất hiện.
+- Lý do: Tránh tạo box sớm khi chưa có đủ căn cứ nhìn thấy vật thể; không tự xóa box chỉ để khớp gold.
+
+### Ca 2 — Bbox của track 5 khớp chưa sát
+
+- Clip / frame / ID: `clip_01`, frame **84, 91, 92, 93, 94, 96**, annotation ID **5**, gold ID **5**.
+- Tình huống: Output liệt kê các bbox có IoU thấp; tại frame **94**, IoU là **0.506**.
+- Hướng xử lý: Kiểm tra các cạnh bbox và các frame nội suy lân cận; điều chỉnh box theo phần xe nhìn thấy nếu hình ảnh xác nhận có sai lệch.
+- Lý do: Bbox có thể vẫn đạt ngưỡng ghép 0.5 nhưng chưa sát. Không đổi ID chỉ vì bbox lệch.
+
+### Ca 3 — Bbox của track 6 khớp chưa sát
+
+- Clip / frame / ID: `clip_01`, frame **111, 112, 113, 119**, annotation ID **6**, gold ID **6**.
+- Tình huống: Output ghi IoU **0.537** tại frame **112** và **0.563** tại frame **119**.
+- Hướng xử lý: Rà các frame trong đoạn 111–119, kiểm tra thay đổi hình dạng phần nhìn thấy và vị trí box; bổ sung keyframe nếu nội suy không bám sát vật thể.
+- Lý do: Cần kiểm tra cả đoạn thay vì chỉ một frame. Output không đủ để kết luận sai lệch do che khuất, thao tác kéo box hay nội suy.
 
 ## 5. Sửa gì sau khi chấm với gold và sau khi kiểm chéo
 
-Luật nào trong file này hoá ra còn thiếu hoặc còn mơ hồ? Viết lại cho rõ:
+Tôi bổ sung các quy tắc sau vào hướng dẫn từ những vấn đề được output chỉ ra:
 
-- `...`
-- `...`
+- **Thời điểm bắt đầu/kết thúc:** kiểm tra từng frame quanh lúc xuất hiện và vắng mặt; đặt Outside đúng lúc, không để box kéo dài qua đoạn không nhìn thấy vật thể.
+- **Độ sát của bbox:** rà cả frame keyframe và frame nội suy; ôm phần nhìn thấy, không suy đoán phần bị che hoặc ngoài ảnh.
+- **Giữ ID:** kiểm tra chuỗi trước/sau đoạn giao nhau hoặc che khuất; phân biệt lỗi bbox với lỗi identity. Output annotation hiện tại ghi **IDSW = 0**, không có track bị tách theo diagnostics.
+- **Theo dõi sửa đổi:** nếu sửa annotation, ghi frame–ID–nội dung sửa, export lại và cập nhật các phép đánh giá dùng annotation đó. Giữ nguyên snapshot đã lưu.
+
+Đây là cập nhật quy tắc và hướng rà soát; chưa có nhật ký xác nhận các bbox nêu trên đã được sửa. Phần kiểm chéo không thực hiện trong báo cáo này.
