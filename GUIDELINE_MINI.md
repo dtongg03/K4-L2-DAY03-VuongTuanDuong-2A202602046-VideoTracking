@@ -10,16 +10,14 @@ Tôi hoàn thiện hướng dẫn này dựa trên `GUIDE.md`, `CVAT_TASK_SPEC.m
 
 ## 1. Phạm vi: gán cái gì, không gán cái gì
 
-Một lớp duy nhất: **`vehicle`** — xe bốn bánh.
+Tôi chỉ gán **một nhãn duy nhất: `vehicle`**. Tất cả track được gán đều dùng nhãn này; không tạo nhãn riêng theo loại xe.
 
-| Gán | Không gán |
+| Đối tượng | Cách gán |
 | --- | --- |
-| Xe con, SUV, taxi, xe bán tải | Người đi bộ |
-| Van, minivan | Xe đạp |
-| Xe buýt, minibus | Xe máy / mô tô |
-| Xe tải, xe đầu kéo | Xe trong ảnh quảng cáo, trong gương, dưới bóng nước |
+| Xe bốn bánh thuộc phạm vi `vehicle` của bài | Gán nhãn `vehicle` bằng Rectangle Track |
+| Mọi đối tượng còn lại | Không gán nhãn |
 
-Tôi áp dụng phạm vi của bài, không thêm lớp nhãn. Xe đứng yên vẫn thuộc phạm vi nếu xác định được là xe bốn bánh. Khi vật thể nhỏ hoặc mờ đến mức chưa xác định được loại, cần xem các frame lân cận trước khi quyết định.
+Người đi bộ, xe đạp, xe máy/mô tô, biển báo và hình ảnh xe trong quảng cáo, gương hoặc phản chiếu đều không gán. Xe bốn bánh đứng yên vẫn dùng nhãn `vehicle`. Khi vật thể quá nhỏ hoặc mờ, cần xem các frame lân cận; chỉ bắt đầu gán khi xác định được vật thể thuộc phạm vi `vehicle`.
 
 ## 2. Luật ID — phần quan trọng nhất
 
